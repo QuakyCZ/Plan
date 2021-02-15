@@ -19,7 +19,7 @@ package com.djrapitops.plan.settings.locale.lang;
 /**
  * Lang enum for all text included in the html files.
  *
- * @author Rsl1122
+ * @author AuroraLS3
  */
 public enum HtmlLang implements Lang {
 
@@ -259,6 +259,10 @@ public enum HtmlLang implements Lang {
     QUERY("Query<"),
     QUERY_MAKE_ANOTHER("Make another query"),
     QUERY_MAKE("Make a query"),
+
+    WARNING_NO_GAME_SERVERS("Some data requires Plan to be installed on game servers."),
+    WARNING_NO_GEOLOCATIONS("Geolocation gathering needs to be enabled in the config (Accept GeoLite2 EULA)."),
+    WARNING_NO_SPONGE_CHUNKS("Chunks unavailable on Sponge"),
     ;
 
     private final String defaultValue;
