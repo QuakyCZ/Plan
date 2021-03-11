@@ -95,13 +95,19 @@ public class NetworkPageExporter extends FileExporter {
                 .resolve("index.html");
 
         Page page = pageFactory.networkPage();
-        export(to, exportPaths.resolveExportPaths(page.toHtml()));
+
+        // Fixes refreshingJsonRequest ignoring old data of export
+        String html = StringUtils.replaceEach(page.toHtml(),
+                new String[]{"loadPlayersOnlineGraph, 'network-overview', true);"},
+                new String[]{"loadPlayersOnlineGraph, 'network-overview');"});
+
+        export(to, exportPaths.resolveExportPaths(html));
     }
 
     /**
      * Perform export for a network page json payload.
      *
-     * @param exportPaths
+     * @param exportPaths Replacement store for player file paths.
      * @param toDirectory Path to Export directory
      * @param server      Server to export as Network page, {@link Server#isProxy()} assumed true.
      * @throws IOException       If a template can not be read from jar/disk or the result written
@@ -119,6 +125,7 @@ public class NetworkPageExporter extends FileExporter {
                 "graph?type=uniqueAndNew",
                 "graph?type=hourlyUniqueAndNew",
                 "graph?type=serverPie",
+                "graph?type=hostnamePie",
                 "graph?type=activity",
                 "graph?type=geolocation",
                 "graph?type=uniqueAndNew",

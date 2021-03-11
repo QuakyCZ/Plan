@@ -24,7 +24,6 @@ import com.djrapitops.plan.identification.Server;
 import com.djrapitops.plan.storage.database.sql.tables.*;
 import com.djrapitops.plan.storage.database.transactions.ExecBatchStatement;
 import com.djrapitops.plan.storage.database.transactions.Executable;
-import com.djrapitops.plugin.utilities.Verify;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.PreparedStatement;
@@ -53,9 +52,7 @@ public class LargeStoreQueries {
      * @return Executable, use inside a {@link com.djrapitops.plan.storage.database.transactions.Transaction}
      */
     public static Executable storeAllGeoInformation(Map<UUID, List<GeoInfo>> ofUsers) {
-        if (Verify.isEmpty(ofUsers)) {
-            return Executable.empty();
-        }
+        if (ofUsers == null || ofUsers.isEmpty()) return Executable.empty();
 
         return new ExecBatchStatement(GeoInfoTable.INSERT_STATEMENT) {
             @Override
@@ -86,9 +83,7 @@ public class LargeStoreQueries {
      * @return Executable, use inside a {@link com.djrapitops.plan.storage.database.transactions.Transaction}
      */
     public static Executable storeAllNicknameData(Map<UUID, Map<UUID, List<Nickname>>> ofServersAndUsers) {
-        if (Verify.isEmpty(ofServersAndUsers)) {
-            return Executable.empty();
-        }
+        if (ofServersAndUsers == null || ofServersAndUsers.isEmpty()) return Executable.empty();
 
         return new ExecBatchStatement(NicknamesTable.INSERT_STATEMENT) {
             @Override
@@ -115,9 +110,7 @@ public class LargeStoreQueries {
     }
 
     public static Executable storeAllPlanWebUsers(Collection<User> users) {
-        if (Verify.isEmpty(users)) {
-            return Executable.empty();
-        }
+        if (users == null || users.isEmpty()) return Executable.empty();
 
         return new ExecBatchStatement(SecurityTable.INSERT_STATEMENT) {
             @Override
@@ -144,9 +137,7 @@ public class LargeStoreQueries {
      * @return Executable, use inside a {@link com.djrapitops.plan.storage.database.transactions.Transaction}
      */
     public static Executable storeAllPlanServerInformation(Collection<Server> servers) {
-        if (Verify.isEmpty(servers)) {
-            return Executable.empty();
-        }
+        if (servers == null || servers.isEmpty()) return Executable.empty();
 
         return new ExecBatchStatement(ServerTable.INSERT_STATEMENT) {
             @Override
@@ -175,9 +166,7 @@ public class LargeStoreQueries {
      * @return Executable, use inside a {@link com.djrapitops.plan.storage.database.transactions.Transaction}
      */
     public static Executable storeAllTPSData(Map<UUID, List<TPS>> ofServers) {
-        if (Verify.isEmpty(ofServers)) {
-            return Executable.empty();
-        }
+        if (ofServers == null || ofServers.isEmpty()) return Executable.empty();
 
         return new ExecBatchStatement(TPSTable.INSERT_STATEMENT) {
             @Override
@@ -211,9 +200,7 @@ public class LargeStoreQueries {
      * @return Executable, use inside a {@link com.djrapitops.plan.storage.database.transactions.Transaction}
      */
     public static Executable storePerServerUserInformation(Map<UUID, List<UserInfo>> ofServers) {
-        if (Verify.isEmpty(ofServers)) {
-            return Executable.empty();
-        }
+        if (ofServers == null || ofServers.isEmpty()) return Executable.empty();
 
         return new ExecBatchStatement(UserInfoTable.INSERT_STATEMENT) {
             @Override
@@ -227,7 +214,8 @@ public class LargeStoreQueries {
                         statement.setLong(2, user.getRegistered());
                         statement.setString(3, serverUUID.toString());
                         statement.setBoolean(4, user.isBanned());
-                        statement.setBoolean(5, user.isOperator());
+                        statement.setString(5, user.getHostname());
+                        statement.setBoolean(6, user.isOperator());
                         statement.addBatch();
                     }
                 }
@@ -242,9 +230,7 @@ public class LargeStoreQueries {
      * @return Executable, use inside a {@link com.djrapitops.plan.storage.database.transactions.Transaction}
      */
     public static Executable storeAllWorldNames(Map<UUID, Collection<String>> ofServers) {
-        if (Verify.isEmpty(ofServers)) {
-            return Executable.empty();
-        }
+        if (ofServers == null || ofServers.isEmpty()) return Executable.empty();
 
         return new ExecBatchStatement(WorldTable.INSERT_STATEMENT) {
             @Override
@@ -268,9 +254,7 @@ public class LargeStoreQueries {
      * @return Executable, use inside a {@link com.djrapitops.plan.storage.database.transactions.Transaction}
      */
     public static Executable storeAllCommonUserInformation(Collection<BaseUser> ofUsers) {
-        if (Verify.isEmpty(ofUsers)) {
-            return Executable.empty();
-        }
+        if (ofUsers == null || ofUsers.isEmpty()) return Executable.empty();
 
         return new ExecBatchStatement(UsersTable.INSERT_STATEMENT) {
             @Override
@@ -287,9 +271,7 @@ public class LargeStoreQueries {
     }
 
     public static Executable storeAllSessionsWithoutKillOrWorldData(Collection<Session> sessions) {
-        if (Verify.isEmpty(sessions)) {
-            return Executable.empty();
-        }
+        if (sessions == null || sessions.isEmpty()) return Executable.empty();
 
         return new ExecBatchStatement(SessionsTable.INSERT_STATEMENT) {
             @Override
@@ -317,9 +299,7 @@ public class LargeStoreQueries {
     }
 
     private static Executable storeSessionKillData(Collection<Session> sessions) {
-        if (Verify.isEmpty(sessions)) {
-            return Executable.empty();
-        }
+        if (sessions == null || sessions.isEmpty()) return Executable.empty();
 
         return new ExecBatchStatement(KillsTable.INSERT_STATEMENT) {
             @Override
@@ -332,9 +312,7 @@ public class LargeStoreQueries {
     }
 
     private static Executable storeSessionWorldTimeData(Collection<Session> sessions) {
-        if (Verify.isEmpty(sessions)) {
-            return Executable.empty();
-        }
+        if (sessions == null || sessions.isEmpty()) return Executable.empty();
 
         return new ExecBatchStatement(WorldTimesTable.INSERT_STATEMENT) {
             @Override
@@ -349,9 +327,7 @@ public class LargeStoreQueries {
     }
 
     public static Executable storeAllPingData(Map<UUID, List<Ping>> ofUsers) {
-        if (Verify.isEmpty(ofUsers)) {
-            return Executable.empty();
-        }
+        if (ofUsers == null || ofUsers.isEmpty()) return Executable.empty();
 
         return new ExecBatchStatement(PingTable.INSERT_STATEMENT) {
             @Override

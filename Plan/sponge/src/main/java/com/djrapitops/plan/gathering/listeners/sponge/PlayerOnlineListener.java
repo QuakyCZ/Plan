@@ -36,7 +36,6 @@ import com.djrapitops.plan.storage.database.Database;
 import com.djrapitops.plan.storage.database.transactions.events.*;
 import com.djrapitops.plan.utilities.logging.ErrorContext;
 import com.djrapitops.plan.utilities.logging.ErrorLogger;
-import com.djrapitops.plugin.logging.L;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
@@ -104,7 +103,7 @@ public class PlayerOnlineListener {
         try {
             actOnLoginEvent(event);
         } catch (Exception e) {
-            errorLogger.log(L.ERROR, e, ErrorContext.builder().related(event).build());
+            errorLogger.error(e, ErrorContext.builder().related(event).build());
         }
     }
 
@@ -124,7 +123,7 @@ public class PlayerOnlineListener {
             }
             dbSystem.getDatabase().executeTransaction(new KickStoreTransaction(playerUUID));
         } catch (Exception e) {
-            errorLogger.log(L.ERROR, e, ErrorContext.builder().related(event).build());
+            errorLogger.error(e, ErrorContext.builder().related(event).build());
         }
     }
 
@@ -142,7 +141,7 @@ public class PlayerOnlineListener {
         try {
             actOnJoinEvent(event);
         } catch (Exception e) {
-            errorLogger.log(L.ERROR, e, ErrorContext.builder().related(event).build());
+            errorLogger.error(e, ErrorContext.builder().related(event).build());
         }
     }
 
@@ -158,6 +157,7 @@ public class PlayerOnlineListener {
         String world = player.getWorld().getName();
         Optional<GameMode> gameMode = player.getGameModeData().get(Keys.GAME_MODE);
         String gm = gameMode.map(mode -> mode.getName().toUpperCase()).orElse("ADVENTURE");
+        String hostname = player.getConnection().getVirtualHost().getHostString();
 
         Database database = dbSystem.getDatabase();
         database.executeTransaction(new WorldNameStoreTransaction(serverUUID, world));
@@ -174,7 +174,8 @@ public class PlayerOnlineListener {
             );
         }
 
-        database.executeTransaction(new PlayerServerRegisterTransaction(playerUUID, () -> time, playerName, serverUUID));
+        database.executeTransaction(new PlayerServerRegisterTransaction(playerUUID, () -> time,
+                playerName, serverUUID, hostname));
         Session session = new Session(playerUUID, serverUUID, time, world, gm);
         session.putRawData(SessionKeys.NAME, playerName);
         session.putRawData(SessionKeys.SERVER_NAME, serverInfo.getServer().getIdentifiableName());
@@ -205,7 +206,7 @@ public class PlayerOnlineListener {
         try {
             actOnQuitEvent(event);
         } catch (Exception e) {
-            errorLogger.log(L.ERROR, e, ErrorContext.builder().related(event).build());
+            errorLogger.error(e, ErrorContext.builder().related(event).build());
         }
     }
 

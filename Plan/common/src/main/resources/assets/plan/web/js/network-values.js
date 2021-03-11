@@ -231,11 +231,13 @@ function loadPlayerbaseOverviewValues(json, error) {
     element.querySelector('#data_regular_to_inactive').innerHTML = data.regular_to_inactive + smallTrend(data.regular_to_inactive_trend);
 }
 
-function loadservers(servers, error) {
+function loadservers(json, error) {
     if (error) {
         displayError(document.getElementById('servers-tab'), error);
         return;
     }
+
+    const servers = json.servers;
 
     if (!servers || !servers.length) {
         document.getElementById('game-server-warning').classList.remove('hidden');
@@ -412,5 +414,19 @@ function loadGeolocationGraph(json, error) {
         const errorMessage = `Failed to load graph data: ${error}`;
         document.getElementById('worldMap').innerText = errorMessage;
         document.getElementById('countryBarChart').innerText = errorMessage;
+    }
+}
+
+function loadHostnamePie(json, error) {
+    if (json) {
+        hostnamePieSeries = {
+            name: 'Used IP Addresses',
+            colorByPoint: true,
+            colors: json.hostname_pie_colors,
+            data: json.hostname_pie_slices
+        };
+        hostnamePie('hostnamePie', hostnamePieSeries);
+    } else if (error) {
+        document.getElementById('hostnamePie').innerText = `Failed to load graph data: ${error}`;
     }
 }

@@ -23,7 +23,6 @@ import com.djrapitops.plan.storage.database.sql.tables.*;
 import com.djrapitops.plan.storage.database.transactions.ExecBatchStatement;
 import com.djrapitops.plan.storage.database.transactions.ExecStatement;
 import com.djrapitops.plan.storage.database.transactions.Executable;
-import com.djrapitops.plugin.utilities.Verify;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.PreparedStatement;
@@ -51,7 +50,9 @@ public class DataStoreQueries {
      * @throws IllegalArgumentException If {@link Session#endSession(long)} has not yet been called.
      */
     public static Executable storeSession(Session session) {
-        Verify.isTrue(session.supports(SessionKeys.END), () -> new IllegalArgumentException("Attempted to save a session that has not ended."));
+        if (!session.supports(SessionKeys.END)) {
+            throw new IllegalArgumentException("Attempted to save a session that has not ended.");
+        }
         return connection -> {
             storeSessionInformation(session).execute(connection);
             storeSessionKills(session).execute(connection);
@@ -190,7 +191,7 @@ public class DataStoreQueries {
      * @param serverUUID UUID of the Plan server.
      * @return Executable, use inside a {@link com.djrapitops.plan.storage.database.transactions.Transaction}
      */
-    public static Executable registerUserInfo(UUID playerUUID, long registered, UUID serverUUID) {
+    public static Executable registerUserInfo(UUID playerUUID, long registered, UUID serverUUID, String hostname) {
         return new ExecStatement(UserInfoTable.INSERT_STATEMENT) {
             @Override
             public void prepare(PreparedStatement statement) throws SQLException {
@@ -198,7 +199,8 @@ public class DataStoreQueries {
                 statement.setLong(2, registered);
                 statement.setString(3, serverUUID.toString());
                 statement.setBoolean(4, false); // Banned
-                statement.setBoolean(5, false); // Operator
+                statement.setString(5, hostname); // Hostname
+                statement.setBoolean(6, false); // Operator
             }
         };
     }

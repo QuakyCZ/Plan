@@ -45,7 +45,6 @@ import com.djrapitops.plan.storage.database.Database;
 import com.djrapitops.plan.storage.database.transactions.events.*;
 import com.djrapitops.plan.utilities.logging.ErrorContext;
 import com.djrapitops.plan.utilities.logging.ErrorLogger;
-import com.djrapitops.plugin.logging.L;
 
 import javax.inject.Inject;
 import java.util.UUID;
@@ -104,7 +103,7 @@ public class PlayerOnlineListener implements Listener {
             boolean operator = event.getPlayer().isOp();
             dbSystem.getDatabase().executeTransaction(new OperatorStatusTransaction(playerUUID, operator));
         } catch (Exception e) {
-            errorLogger.log(L.ERROR, e, ErrorContext.builder().related(event).build());
+            errorLogger.error(e, ErrorContext.builder().related(event).build());
         }
     }
 
@@ -129,7 +128,7 @@ public class PlayerOnlineListener implements Listener {
 
             dbSystem.getDatabase().executeTransaction(new KickStoreTransaction(uuid));
         } catch (Exception e) {
-            errorLogger.log(L.ERROR, e, ErrorContext.builder().related(event).build());
+            errorLogger.error(e, ErrorContext.builder().related(event).build());
         }
     }
 
@@ -138,7 +137,7 @@ public class PlayerOnlineListener implements Listener {
         try {
             actOnJoinEvent(event);
         } catch (Exception e) {
-            errorLogger.log(L.ERROR, e, ErrorContext.builder().related(event).build());
+            errorLogger.error(e, ErrorContext.builder().related(event).build());
         }
     }
 
@@ -153,6 +152,7 @@ public class PlayerOnlineListener implements Listener {
 
         String world = player.getLevel().getName();
         String gm = GMTimes.magicNumberToGMName(player.getGamemode());
+        String hostname = player.getAddress();
 
         Database database = dbSystem.getDatabase();
         database.executeTransaction(new WorldNameStoreTransaction(serverUUID, world));
@@ -170,7 +170,8 @@ public class PlayerOnlineListener implements Listener {
         }
 
         long registerDate = TimeUnit.SECONDS.toMillis(player.getFirstPlayed());
-        database.executeTransaction(new PlayerServerRegisterTransaction(playerUUID, () -> registerDate, playerName, serverUUID));
+        database.executeTransaction(new PlayerServerRegisterTransaction(playerUUID, () -> registerDate,
+                playerName, serverUUID, hostname));
         Session session = new Session(playerUUID, serverUUID, time, world, gm);
         session.putRawData(SessionKeys.NAME, playerName);
         session.putRawData(SessionKeys.SERVER_NAME, serverInfo.getServer().getIdentifiableName());
@@ -201,7 +202,7 @@ public class PlayerOnlineListener implements Listener {
         try {
             actOnQuitEvent(event);
         } catch (Exception e) {
-            errorLogger.log(L.ERROR, e, ErrorContext.builder().related(event).build());
+            errorLogger.error(e, ErrorContext.builder().related(event).build());
         }
     }
 
